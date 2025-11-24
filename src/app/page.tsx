@@ -1,7 +1,6 @@
 'use client';
 
 import clsx from 'clsx';
-import Head from 'next/head';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import '@/lib/env';
 
@@ -97,9 +96,6 @@ export default function HomePage() {
 
   return (
     <main>
-      <Head>
-        <meta name="google-site-verification" content="" />
-      </Head>
       <section className={
         clsx(bgColor, textColor,
           "relative flex items-center justify-center h-screen overflow-hidden"
