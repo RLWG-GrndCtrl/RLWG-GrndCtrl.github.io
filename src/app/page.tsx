@@ -10,6 +10,12 @@ import ImageCompare from '@/components/Compare';
 import ArrowLink from '@/components/links/ArrowLink';
 import UnderlineLink from '@/components/links/UnderlineLink';
 
+type Author = {
+  name: string;
+  url?: string; // Optional website URL
+  affiliation?: string; // Affiliation superscript (e.g., "1", "1,2")
+};
+
 
 export default function HomePage() {
   const textColor = 'text-gray-600';
@@ -20,6 +26,26 @@ export default function HomePage() {
   const hl2TextColor = "text-red-700";
   const hlBgColor = "bg-primary-600";
   const linkIconClass = 'h-6 w-6 shrink-0';
+  
+  // Authors list - add your authors here
+  const authors: Author[] = [
+    { name: 'Haoyang He', url: 'https://purenothingness24.github.io', affiliation: '1,2' },
+    { name: 'Jay Patrikar', url: 'https://www.jaypatrikar.me/', affiliation: '2' },
+    { name: 'Dong-Ki Kim', url: 'https://dkkim93.github.io/', affiliation: '2' },
+    { name: 'Max Smith', url: 'https://www.maxosmith.com/', affiliation: '2' },
+    { name: 'Daniel McGann', url: 'https://danmcgann.com/', affiliation: '2' },
+    { name: 'Ali Agha', url: 'https://www.fieldai.com/', affiliation: '2' },
+    { name: 'Shayegan Omidshafiei', url: 'https://www.fieldai.com/', affiliation: '2' },
+    { name: 'Sebastian Scherer', url: 'https://www.ri.cmu.edu/ri-faculty/sebastian-scherer/', affiliation: '1,2' },
+  ];
+  
+  // Background configuration - set to null to use default gray background
+  // For video: use '/video/your-video.mp4'
+  // For image: use '/images/your-image.png'
+  // const backgroundVideo = '/video/CoMe-Intro-v5.mp4'; // Set to null to disable
+  const backgroundVideo = null;
+  const backgroundImage = '/images/groundctrl_intro27.png'; 
+  const backgroundOverlay = 'bg-black/40'; // Overlay color (adjust opacity: bg-black/20 to bg-black/80)
   const citation_bibtex = `@article{grndctrl2026,
       title={GrndCtrl: Grounding World Models via Self-Supervised Reward Alignment}, 
       author={[Authors to be added]},
@@ -109,19 +135,40 @@ export default function HomePage() {
               className="h-12 inline-block mr-3 align-middle"
               loading='lazy'
             />
-            GrndCtrl: {" "}
-            <span className={hlTextColor}>Gr</span>ounding {" "}
-            <span className={hlTextColor}>W</span>orld {" "}
-            <span className={hlTextColor}>M</span>odels via {" "}
-            <span className={hlTextColor}>S</span>elf-Supervised {" "}
-            <span className={hlTextColor}>R</span>eward {" "}
-            <span className={hlTextColor}>A</span>lignment
+            GrndCtrl: Grounding World Models via Self-Supervised Reward Alignment
           </h1>
-          <div className='container pb-6'>
-            <span className='text-lg'>
-              {/* Authors to be added */}
-              <span className="text-gray-500">Authors: [To be updated]</span>
-            </span>
+          <div className='container pb-6 max-w-4xl mx-auto'>
+            <div className='text-lg'>
+              {authors.length > 0 ? (
+                <span className="text-gray-700">
+                  {authors.map((author, index) => (
+                    <span key={index}>
+                      {index === authors.length - 3 && <br />}
+                      {author.url ? (
+                        <UnderlineLink
+                          href={author.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-gray-700 hover:text-gray-900"
+                        >
+                          {author.name}
+                        </UnderlineLink>
+                      ) : (
+                        <span className="text-gray-700">{author.name}</span>
+                      )}
+                      {author.affiliation && (
+                        <sup className="text-gray-700 ml-0.5">{author.affiliation}</sup>
+                      )}
+                      {index < authors.length - 1 && (
+                        <span className="text-gray-500 mx-1">,</span>
+                      )}
+                    </span>
+                  ))}
+                </span>
+              ) : (
+                <span className="text-gray-500">[To be updated]</span>
+              )}
+            </div>
           </div>
           <div className="container flex flex-row items-center space-x-8 justify-center text-lg">
             <ArrowLink className='mt-6' href='#' variant="light" size='large' icon={
@@ -146,15 +193,34 @@ export default function HomePage() {
             </ArrowLink>
           </div>
         </div>
-        <div className={clsx("absolute w-auto min-w-full min-h-full max-w-none z-10", maskColor)} />
-        <div className="absolute inset-0 flex items-center justify-center z-0 opacity-10">
+        {/* Background Video */}
+        {backgroundVideo && (
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover z-0"
+          >
+            <source src={backgroundVideo} type="video/mp4" />
+          </video>
+        )}
+        {/* Background Image */}
+        {!backgroundVideo && backgroundImage && (
           <img
-            src='/images/icon.png'
-            alt='Background icon'
-            className="w-1/3 h-1/3 object-contain"
-            loading='lazy'
+            src={backgroundImage}
+            alt="Background"
+            className="absolute inset-0 w-full h-full object-cover z-0"
           />
-        </div>
+        )}
+        {/* Default gray background (if no video/image) */}
+        {!backgroundVideo && !backgroundImage && (
+          <div className={clsx("absolute w-auto min-w-full min-h-full max-w-none z-10", maskColor)} />
+        )}
+        {/* Overlay for better text readability */}
+        {(backgroundVideo || backgroundImage) && (
+          <div className={clsx("absolute inset-0 z-10", backgroundOverlay)} />
+        )}
       </section>
 
       <section className={clsx(bgColor, textColor)}>
@@ -205,7 +271,7 @@ export default function HomePage() {
         <div className='layout py-12'>
           <h2 className='pb-4'>Method</h2>
           <Figure
-            img_src="/images/grndctrl_pipeline.png"
+            img_src="/images/grndctrl_fig2_v6.png"
             caption="Overview of GrndCtrl. RLWG refines pretrained world models using verifiable geometric and perceptual rewards. GrndCtrl instantiates RLWG using Group Relative Policy Optimization (GRPO) to optimize these rewards, enabling physically consistent rollouts."
             isDark={false}
             idx={1}
