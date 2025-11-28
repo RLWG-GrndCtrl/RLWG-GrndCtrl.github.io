@@ -44,7 +44,7 @@ export default function HomePage() {
   // For image: use '/images/your-image.png'
   // const backgroundVideo = '/video/CoMe-Intro-v5.mp4'; // Set to null to disable
   const backgroundVideo = null;
-  const backgroundImage = '/images/groundctrl_intro27.png'; 
+  const backgroundImage = '/images/groundctrl_intro1s.gif'; 
   const backgroundOverlay = 'bg-black/40'; // Overlay color (adjust opacity: bg-black/20 to bg-black/80)
   const citation_bibtex = `@article{grndctrl2026,
       title={GrndCtrl: Grounding World Models via Self-Supervised Reward Alignment}, 
@@ -120,6 +120,62 @@ export default function HomePage() {
     slider.scrollLeft = targetScroll;
   }, []);
 
+  // Video sets for qualitative comparison
+  type VideoSet = {
+    folder: string;
+    name: string;
+    baseline: string;
+    groundTruth: string;
+    ours: string;
+  };
+
+  const videoSets: VideoSet[] = [
+    {
+      folder: 'vids-coda1',
+      name: 'CODA 1',
+      baseline: '/images/vids-coda1/13_10_baseline.gif',
+      groundTruth: '/images/vids-coda1/13_10_gt.gif',
+      ours: '/images/vids-coda1/13_10_ours.gif',
+    },
+    {
+      folder: 'vids-coda2',
+      name: 'CODA 2',
+      baseline: '/images/vids-coda2/16_22_baseline.gif',
+      groundTruth: '/images/vids-coda2/16_22_gt.gif',
+      ours: '/images/vids-coda2/16_22_ours.gif',
+    },
+    {
+      folder: 'vids-citywalk1',
+      name: 'CityWalk 1',
+      baseline: '/images/vids-citywalk1/citywalk_sample71_base.gif',
+      groundTruth: '/images/vids-citywalk1/citywalk_sample71_gt.gif',
+      ours: '/images/vids-citywalk1/citywalk_sample71_ours.gif',
+    },
+    {
+      folder: 'vids-citywalk2',
+      name: 'CityWalk 2',
+      baseline: '/images/vids-citywalk2/citywalk_230base.gif',
+      groundTruth: '/images/vids-citywalk2/citywalk_230gt.gif',
+      ours: '/images/vids-citywalk2/citywalk_230ours.gif',
+    },
+    {
+      folder: 'vids-scand1',
+      name: 'Scand 1',
+      baseline: '/images/vids-scand1/sample_11baseline.gif',
+      groundTruth: '/images/vids-scand1/sample_11gt.gif',
+      ours: '/images/vids-scand1/ours_sample11.gif',
+    },
+    {
+      folder: 'vids-scand2',
+      name: 'Scand 2',
+      baseline: '/images/vids-scand2/scand_sample_base.gif',
+      groundTruth: '/images/vids-scand2/scand_sample_gt.gif',
+      ours: '/images/vids-scand2/scand_sample_ours.gif',
+    },
+  ];
+
+  const [selectedVideoSet, setSelectedVideoSet] = useState<VideoSet | null>(null);
+
   return (
     <main>
       <section className={
@@ -128,69 +184,71 @@ export default function HomePage() {
         )
       }>
         <div className='layout z-20 relative flex min-h-screen flex-col items-center justify-center p-4 text-center'>
-          <h1 className='mt-4 text-5xl mb-4'>
-            <img
-              src='/images/icon.png'
-              alt='GrndCtrl icon'
-              className="h-12 inline-block mr-3 align-middle"
-              loading='lazy'
-            />
-            GrndCtrl: Grounding World Models via Self-Supervised Reward Alignment
-          </h1>
-          <div className='container pb-6 max-w-4xl mx-auto'>
-            <div className='text-lg'>
-              {authors.length > 0 ? (
-                <span className="text-gray-700">
-                  {authors.map((author, index) => (
-                    <span key={index}>
-                      {index === authors.length - 3 && <br />}
-                      {author.url ? (
-                        <UnderlineLink
-                          href={author.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-gray-700 hover:text-gray-900"
-                        >
-                          {author.name}
-                        </UnderlineLink>
-                      ) : (
-                        <span className="text-gray-700">{author.name}</span>
-                      )}
-                      {author.affiliation && (
-                        <sup className="text-gray-700 ml-0.5">{author.affiliation}</sup>
-                      )}
-                      {index < authors.length - 1 && (
-                        <span className="text-gray-500 mx-1">,</span>
-                      )}
-                    </span>
-                  ))}
-                </span>
-              ) : (
-                <span className="text-gray-500">[To be updated]</span>
-              )}
+          <div className='bg-white/40 backdrop-blur-sm rounded-lg px-8 py-6 shadow-lg'>
+            <h1 className='mt-4 text-5xl mb-4'>
+              <img
+                src='/images/icon.png'
+                alt='GrndCtrl icon'
+                className="h-12 inline-block mr-3 align-middle"
+                loading='lazy'
+              />
+              GrndCtrl: Grounding World Models via Self-Supervised Reward Alignment
+            </h1>
+            <div className='container pb-6 max-w-4xl mx-auto'>
+              <div className='text-lg'>
+                {authors.length > 0 ? (
+                  <span className="text-gray-700">
+                    {authors.map((author, index) => (
+                      <span key={index}>
+                        {index === authors.length - 3 && <br />}
+                        {author.url ? (
+                          <UnderlineLink
+                            href={author.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-gray-700 hover:text-gray-900"
+                          >
+                            {author.name}
+                          </UnderlineLink>
+                        ) : (
+                          <span className="text-gray-700">{author.name}</span>
+                        )}
+                        {author.affiliation && (
+                          <sup className="text-gray-700 ml-0.5">{author.affiliation}</sup>
+                        )}
+                        {index < authors.length - 1 && (
+                          <span className="text-gray-500 mx-1">,</span>
+                        )}
+                      </span>
+                    ))}
+                  </span>
+                ) : (
+                  <span className="text-gray-500">[To be updated]</span>
+                )}
+              </div>
             </div>
-          </div>
-          <div className="container flex flex-row items-center space-x-8 justify-center text-lg">
-            <ArrowLink className='mt-6' href='#' variant="light" size='large' icon={
-              <img
-                src='/svg/arxiv.svg'
-                alt='arXiv logo'
-                className={linkIconClass}
-                loading='lazy'
-              />
-            }>
-              arXiv Page
-            </ArrowLink>
-            <ArrowLink className='mt-6' href='https://github.com/RLWG-GrndCtrl' variant="light" size='large' icon={
-              <img
-                src='/svg/github.svg'
-                alt='GitHub logo'
-                className={linkIconClass}
-                loading='lazy'
-              />
-            }>
-              GitHub Repo
-            </ArrowLink>
+            <div className="container flex flex-row items-center space-x-8 justify-center text-lg mt-6">
+              <ArrowLink className='' href='#' variant="light" size='large' icon={
+                <img
+                  src='/svg/arxiv.svg'
+                  alt='arXiv logo'
+                  className={linkIconClass}
+                  loading='lazy'
+                />
+              }>
+                arXiv Page
+              </ArrowLink>
+              <ArrowLink className='' href='https://github.com/RLWG-GrndCtrl' variant="light" size='large' icon={
+                <img
+                  src='/svg/github.svg'
+                  alt='GitHub logo'
+                  className={linkIconClass}
+                  loading='lazy'
+                />
+              }>
+                GitHub Repo
+              </ArrowLink>
+            </div>
           </div>
         </div>
         {/* Background Video */}
@@ -221,6 +279,17 @@ export default function HomePage() {
         {(backgroundVideo || backgroundImage) && (
           <div className={clsx("absolute inset-0 z-10", backgroundOverlay)} />
         )}
+        {/* Affiliations - Bottom Left */}
+        <div className='absolute bottom-4 left-0 z-30 flex flex-row items-center gap-6 text-sm ml-2'>
+          <div className='flex items-center gap-2'>
+            <span className='text-gray-600 font-semibold text-xs'>1</span>
+            <img src='/images/cmu.png' alt='Carnegie Mellon University' className='h-6' />
+          </div>
+          <div className='flex items-center gap-2'>
+            <span className='text-gray-600 font-semibold text-xs'>2</span>
+            <img src='/images/fieldai.png' alt='Field AI' className='h-6' />
+          </div>
+        </div>
       </section>
 
       <section className={clsx(bgColor, textColor)}>
@@ -267,6 +336,87 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className={clsx(secondaryBgColor, textColor)}>
+        <div className='py-12'>
+          <div className={`text-center ${selectedVideoSet ? 'mb-6' : 'mb-8'}`}>
+            <h2 className='pb-4'>Qualitative Comparison</h2>
+            {!selectedVideoSet && (
+              <p className='text-gray-600'>
+                Click to see comparisons of GrndCtrl with ground truth and baseline methods across different scenarios.
+              </p>
+            )}
+            {selectedVideoSet && (
+              <button
+                onClick={() => setSelectedVideoSet(null)}
+                className='text-gray-600 hover:text-gray-900 underline transition-transform hover:-translate-x-1 inline-flex items-center gap-1'
+              >
+                <span>←</span>
+                <span>Back to all videos</span>
+              </button>
+            )}
+          </div>
+          
+          <div className='relative'>
+            {!selectedVideoSet ? (
+              // Show scrollable row of baseline videos
+              <div className='overflow-x-auto pb-4'>
+                <div className='flex gap-6 px-48 min-w-max'>
+                  {videoSets.map((videoSet) => (
+                    <div
+                      key={videoSet.folder}
+                      onClick={() => setSelectedVideoSet(videoSet)}
+                      className='flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity w-96'
+                    >
+                      <img
+                        src={videoSet.groundTruth}
+                        alt={`${videoSet.name} ground truth`}
+                        className='w-full rounded-lg shadow-xl'
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              // Show the 2 comparison sliders for selected set
+              <div className='px-48'>
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                  <div className='flex flex-col'>
+                    <ImageCompare
+                      rightSrc={selectedVideoSet.groundTruth}
+                      leftSrc={selectedVideoSet.baseline}
+                      rightAlt={`${selectedVideoSet.name} ground truth`}
+                      leftAlt={`${selectedVideoSet.name} baseline`}
+                      rightLabel="Baseline (Counterfactual)"
+                      leftLabel="Ground Truth"
+                      leftLabelColor="#4A7EBB"
+                      rightLabelColor="#C95C54"
+                      className="w-full max-w-lg mx-auto"
+                      fit="contain"
+                    />
+                  </div>
+                  <div className='flex flex-col'>
+                    <ImageCompare
+                      rightSrc={selectedVideoSet.groundTruth}
+                      leftSrc={selectedVideoSet.ours}
+                      rightAlt={`${selectedVideoSet.name} ground truth`}
+                      leftAlt={`${selectedVideoSet.name} ours`}
+                      rightLabel="Ours (Counterfactual)"
+                      leftLabel="Ground Truth"
+                      leftLabelColor="#4A7EBB"
+                      rightLabelColor="#5E9C76"
+                      className="w-full max-w-lg mx-auto"
+                      fit="contain"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+            <div className='pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-gray-100 to-transparent' />
+            <div className='pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-gray-100 to-transparent' />
+          </div>
+        </div>
+      </section>
+
       <section className={clsx(bgColor, textColor)}>
         <div className='layout py-12'>
           <h2 className='pb-4'>Method</h2>
@@ -279,14 +429,14 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className={clsx(secondaryBgColor, textColor)}>
+      {/* <section className={clsx(secondaryBgColor, textColor)}>
         <div className='layout pt-4 pb-48'>
           <h2 className='mt-12 mb-4'>Citation</h2>
           <pre className='ml-12'>
             {citation_bibtex}
           </pre>
         </div>
-      </section>
+      </section> */}
     </main >
   );
 }

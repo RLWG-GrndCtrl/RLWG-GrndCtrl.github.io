@@ -11,6 +11,8 @@ type Props = {
   initial?: number;           // [0,1]
   leftLabel?: string;
   rightLabel?: string;
+  leftLabelColor?: string;    // Custom color for left label (hex or CSS color)
+  rightLabelColor?: string;   // Custom color for right label (hex or CSS color)
   className?: string;         // you can pass "aspect-[4/3]" here
   fit?: 'cover' | 'contain';  // how to place images inside the frame
   objectPosition?: string;    // e.g. 'center', 'left top'
@@ -24,6 +26,8 @@ export default function ImageCompare({
   initial = 0.5,
   leftLabel,
   rightLabel,
+  leftLabelColor,
+  rightLabelColor,
   className = '',
   fit = 'cover',
   objectPosition = 'center',
@@ -129,12 +133,18 @@ export default function ImageCompare({
       </div>
 
       {leftLabel && (
-        <div className="absolute left-2 top-2 text-xs font-medium px-1.5 py-0.5 rounded bg-black/60 text-white">
+        <div 
+          className="absolute left-2 top-2 text-xs font-medium px-1.5 py-0.5 rounded bg-white/80 backdrop-blur-sm"
+          style={leftLabelColor ? { color: leftLabelColor } : {}}
+        >
           {leftLabel}
         </div>
       )}
       {rightLabel && (
-        <div className="absolute right-2 top-2 text-xs font-medium px-1.5 py-0.5 rounded bg-black/60 text-primary-400">
+        <div 
+          className="absolute right-2 top-2 text-xs font-medium px-1.5 py-0.5 rounded bg-white/80 backdrop-blur-sm"
+          style={rightLabelColor ? { color: rightLabelColor } : {}}
+        >
           {rightLabel}
         </div>
       )}
