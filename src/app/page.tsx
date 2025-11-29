@@ -131,18 +131,18 @@ export default function HomePage() {
 
   const videoSets: VideoSet[] = [
     {
-      folder: 'vids-coda1',
-      name: 'CODA 1',
-      baseline: '/images/vids-coda1/13_10_baseline.gif',
-      groundTruth: '/images/vids-coda1/13_10_gt.gif',
-      ours: '/images/vids-coda1/13_10_ours.gif',
-    },
-    {
       folder: 'vids-coda2',
       name: 'CODA 2',
       baseline: '/images/vids-coda2/16_22_baseline.gif',
       groundTruth: '/images/vids-coda2/16_22_gt.gif',
       ours: '/images/vids-coda2/16_22_ours.gif',
+    },
+    {
+      folder: 'vids-scand2',
+      name: 'Scand 2',
+      baseline: '/images/vids-scand2/scand_sample_base.gif',
+      groundTruth: '/images/vids-scand2/scand_sample_gt.gif',
+      ours: '/images/vids-scand2/scand_sample_ours.gif',
     },
     {
       folder: 'vids-citywalk1',
@@ -152,11 +152,11 @@ export default function HomePage() {
       ours: '/images/vids-citywalk1/citywalk_sample71_ours.gif',
     },
     {
-      folder: 'vids-citywalk2',
-      name: 'CityWalk 2',
-      baseline: '/images/vids-citywalk2/citywalk_230base.gif',
-      groundTruth: '/images/vids-citywalk2/citywalk_230gt.gif',
-      ours: '/images/vids-citywalk2/citywalk_230ours.gif',
+      folder: 'vids-coda1',
+      name: 'CODA 1',
+      baseline: '/images/vids-coda1/13_10_baseline.gif',
+      groundTruth: '/images/vids-coda1/13_10_gt.gif',
+      ours: '/images/vids-coda1/13_10_ours.gif',
     },
     {
       folder: 'vids-scand1',
@@ -166,12 +166,12 @@ export default function HomePage() {
       ours: '/images/vids-scand1/ours_sample11.gif',
     },
     {
-      folder: 'vids-scand2',
-      name: 'Scand 2',
-      baseline: '/images/vids-scand2/scand_sample_base.gif',
-      groundTruth: '/images/vids-scand2/scand_sample_gt.gif',
-      ours: '/images/vids-scand2/scand_sample_ours.gif',
-    },
+      folder: 'vids-citywalk2',
+      name: 'CityWalk 2',
+      baseline: '/images/vids-citywalk2/citywalk_230base.gif',
+      groundTruth: '/images/vids-citywalk2/citywalk_230gt.gif',
+      ours: '/images/vids-citywalk2/citywalk_230ours.gif',
+    }
   ];
 
   const [selectedVideoSet, setSelectedVideoSet] = useState<VideoSet | null>(null);
@@ -238,7 +238,7 @@ export default function HomePage() {
               }>
                 arXiv Page
               </ArrowLink>
-              <ArrowLink className='' href='https://github.com/RLWG-GrndCtrl' variant="light" size='large' icon={
+              <ArrowLink className='' href='https://github.com/RLWG-GrndCtrl/RLWG-GrndCtrl.github.io' variant="light" size='large' icon={
                 <img
                   src='/svg/github.svg'
                   alt='GitHub logo'
