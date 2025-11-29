@@ -287,7 +287,7 @@ export default function HomePage() {
           </div>
           <div className='flex items-center gap-2'>
             <span className='text-gray-600 font-semibold text-xs'>2</span>
-            <img src='/images/fieldai.png' alt='Field AI' className='h-6' />
+            <img src='/images/fieldai.png' alt='Field AI' className='h-7' />
           </div>
         </div>
       </section>
@@ -426,6 +426,312 @@ export default function HomePage() {
             isDark={false}
             idx={1}
           />
+        </div>
+      </section>
+
+      <section className={clsx(secondaryBgColor, textColor)}>
+        <div className='layout py-12'>
+          <h2 className='pb-4'>Quantitative Results</h2>
+          <div className='overflow-x-auto'>
+            <table className='w-full border-collapse text-sm'>
+              <thead>
+                <tr className='border-b-2 border-gray-300'>
+                  <th className='text-left p-2 font-semibold'>Method</th>
+                  <th colSpan={4} className='text-center p-2 font-semibold border-l border-r border-gray-300'>
+                    <div>Seen</div>
+                  </th>
+                  <th colSpan={4} className='text-center p-2 font-semibold border-r border-gray-300'>
+                    <div>Counterfactual</div>
+                  </th>
+                  <th colSpan={4} className='text-center p-2 font-semibold'>
+                    <div>Unseen</div>
+                  </th>
+                </tr>
+                <tr className='border-b border-gray-300'>
+                  <th className='text-left p-2'></th>
+                  <th className='text-center p-2 border-l border-gray-300'>T↓</th>
+                  <th className='text-center p-2'>R↓</th>
+                  <th className='text-center p-2'>V↑</th>
+                  <th className='text-center p-2 border-r border-gray-300'>DTRI↑</th>
+                  <th className='text-center p-2'>T↓</th>
+                  <th className='text-center p-2'>R↓</th>
+                  <th className='text-center p-2'>V↑</th>
+                  <th className='text-center p-2 border-r border-gray-300'>DTRI↑</th>
+                  <th className='text-center p-2'>T↓</th>
+                  <th className='text-center p-2'>R↓</th>
+                  <th className='text-center p-2'>V↑</th>
+                  <th className='text-center p-2'>DTRI↑</th>
+                </tr>
+              </thead>
+              <tbody>
+                {/* CODa Dataset */}
+                <tr>
+                  <td colSpan={13} className='p-2 font-semibold bg-gray-50 text-center'>CODa</td>
+                </tr>
+                <tr>
+                  <td className='p-2 pl-4'>Baseline</td>
+                  <td className='text-center p-2 border-l border-gray-200'>57.8</td>
+                  <td className='text-center p-2'>1.77</td>
+                  <td className='text-center p-2'>7.40</td>
+                  <td className='text-center p-2 border-r border-gray-200'>38.9</td>
+                  <td className='text-center p-2'>71.5</td>
+                  <td className='text-center p-2'>1.55</td>
+                  <td className='text-center p-2'>7.41</td>
+                  <td className='text-center p-2 border-r border-gray-200'>39.1</td>
+                  <td className='text-center p-2'>56.9</td>
+                  <td className='text-center p-2'>1.71</td>
+                  <td className='text-center p-2'>7.40</td>
+                  <td className='text-center p-2'>38.3</td>
+                </tr>
+                <tr>
+                  <td className='p-2 pl-4'>+T+R</td>
+                  <td className='text-center p-2 border-l border-gray-200'>46.4</td>
+                  <td className='text-center p-2'>1.44</td>
+                  <td className='text-center p-2'>7.32</td>
+                  <td className='text-center p-2 border-r border-gray-200'>38.4</td>
+                  <td className='text-center p-2'>50.5</td>
+                  <td className='text-center p-2'>1.53</td>
+                  <td className='text-center p-2'>7.34</td>
+                  <td className='text-center p-2 border-r border-gray-200'>38.7</td>
+                  <td className='text-center p-2'>54.3</td>
+                  <td className='text-center p-2'>1.75</td>
+                  <td className='text-center p-2'>7.36</td>
+                  <td className='text-center p-2'>39.3</td>
+                </tr>
+                <tr>
+                  <td className='p-2 pl-4'>+T+R+DTRI</td>
+                  <td className='text-center p-2 border-l border-gray-200'>65.7</td>
+                  <td className='text-center p-2'>1.74</td>
+                  <td className='text-center p-2'>7.43</td>
+                  <td className='text-center p-2 border-r border-gray-200'>37.0</td>
+                  <td className='text-center p-2'>57.7</td>
+                  <td className='text-center p-2'>1.86</td>
+                  <td className='text-center p-2'>7.42</td>
+                  <td className='text-center p-2 border-r border-gray-200'>36.8</td>
+                  <td className='text-center p-2'>42.6</td>
+                  <td className='text-center p-2'>1.74</td>
+                  <td className='text-center p-2'>7.40</td>
+                  <td className='text-center p-2'>37.1</td>
+                </tr>
+                <tr className='bg-blue-50'>
+                  <td className='p-2 pl-4 font-semibold'>+T+R+DTRI+V</td>
+                  <td className='text-center p-2 border-l border-gray-200 font-semibold'>39.9</td>
+                  <td className='text-center p-2 font-semibold'>1.27</td>
+                  <td className='text-center p-2 font-semibold'>7.35</td>
+                  <td className='text-center p-2 border-r border-gray-200 font-semibold'>37.5</td>
+                  <td className='text-center p-2 font-semibold'>40.7</td>
+                  <td className='text-center p-2 font-semibold'>1.42</td>
+                  <td className='text-center p-2 font-semibold'>7.34</td>
+                  <td className='text-center p-2 border-r border-gray-200 font-semibold'>37.4</td>
+                  <td className='text-center p-2 font-semibold'>31.0</td>
+                  <td className='text-center p-2 font-semibold'>1.53</td>
+                  <td className='text-center p-2 font-semibold'>7.37</td>
+                  <td className='text-center p-2 font-semibold'>38.0</td>
+                </tr>
+                {/* SCAND Dataset */}
+                <tr>
+                  <td colSpan={13} className='p-2 font-semibold bg-gray-50 border-t-2 border-gray-300 text-center'>SCAND</td>
+                </tr>
+                <tr>
+                  <td className='p-2 pl-4'>Baseline</td>
+                  <td className='text-center p-2 border-l border-gray-200'>186.3</td>
+                  <td className='text-center p-2'>3.76</td>
+                  <td className='text-center p-2'>7.16</td>
+                  <td className='text-center p-2 border-r border-gray-200'>23.6</td>
+                  <td className='text-center p-2'>315.9</td>
+                  <td className='text-center p-2'>4.24</td>
+                  <td className='text-center p-2'>7.13</td>
+                  <td className='text-center p-2 border-r border-gray-200'>21.4</td>
+                  <td className='text-center p-2'>117.0</td>
+                  <td className='text-center p-2'>4.02</td>
+                  <td className='text-center p-2'>6.99</td>
+                  <td className='text-center p-2'>18.4</td>
+                </tr>
+                <tr>
+                  <td className='p-2 pl-4'>+T+R</td>
+                  <td className='text-center p-2 border-l border-gray-200'>158.2</td>
+                  <td className='text-center p-2'>3.61</td>
+                  <td className='text-center p-2'>7.19</td>
+                  <td className='text-center p-2 border-r border-gray-200'>23.7</td>
+                  <td className='text-center p-2'>251.2</td>
+                  <td className='text-center p-2'>4.34</td>
+                  <td className='text-center p-2'>7.18</td>
+                  <td className='text-center p-2 border-r border-gray-200'>21.7</td>
+                  <td className='text-center p-2'>131.1</td>
+                  <td className='text-center p-2'>3.95</td>
+                  <td className='text-center p-2'>7.04</td>
+                  <td className='text-center p-2'>19.1</td>
+                </tr>
+                <tr>
+                  <td className='p-2 pl-4'>+T+R+DTRI</td>
+                  <td className='text-center p-2 border-l border-gray-200'>157.9</td>
+                  <td className='text-center p-2'>3.65</td>
+                  <td className='text-center p-2'>7.10</td>
+                  <td className='text-center p-2 border-r border-gray-200'>22.1</td>
+                  <td className='text-center p-2'>288.6</td>
+                  <td className='text-center p-2'>4.45</td>
+                  <td className='text-center p-2'>7.17</td>
+                  <td className='text-center p-2 border-r border-gray-200'>20.1</td>
+                  <td className='text-center p-2'>118.6</td>
+                  <td className='text-center p-2'>4.07</td>
+                  <td className='text-center p-2'>7.03</td>
+                  <td className='text-center p-2'>17.9</td>
+                </tr>
+                <tr className='bg-blue-50'>
+                  <td className='p-2 pl-4 font-semibold'>+T+R+DTRI+V</td>
+                  <td className='text-center p-2 border-l border-gray-200 font-semibold'>133.4</td>
+                  <td className='text-center p-2 font-semibold'>3.30</td>
+                  <td className='text-center p-2 font-semibold'>7.11</td>
+                  <td className='text-center p-2 border-r border-gray-200 font-semibold'>24.5</td>
+                  <td className='text-center p-2 font-semibold'>220.1</td>
+                  <td className='text-center p-2 font-semibold'>4.23</td>
+                  <td className='text-center p-2 font-semibold'>7.08</td>
+                  <td className='text-center p-2 border-r border-gray-200 font-semibold'>22.8</td>
+                  <td className='text-center p-2 font-semibold'>123.4</td>
+                  <td className='text-center p-2 font-semibold'>3.62</td>
+                  <td className='text-center p-2 font-semibold'>6.98</td>
+                  <td className='text-center p-2 font-semibold'>19.4</td>
+                </tr>
+                {/* CityWalk Dataset */}
+                <tr>
+                  <td colSpan={13} className='p-2 font-semibold bg-gray-50 border-t-2 border-gray-300 text-center'>CityWalk</td>
+                </tr>
+                <tr>
+                  <td className='p-2 pl-4'>Baseline</td>
+                  <td className='text-center p-2 border-l border-gray-200'>11.7</td>
+                  <td className='text-center p-2'>3.13</td>
+                  <td className='text-center p-2'>7.96</td>
+                  <td className='text-center p-2 border-r border-gray-200'>46.9</td>
+                  <td className='text-center p-2'>13.1</td>
+                  <td className='text-center p-2'>3.27</td>
+                  <td className='text-center p-2'>7.94</td>
+                  <td className='text-center p-2 border-r border-gray-200'>47.4</td>
+                  <td className='text-center p-2'>20.8</td>
+                  <td className='text-center p-2'>4.47</td>
+                  <td className='text-center p-2'>7.90</td>
+                  <td className='text-center p-2'>44.5</td>
+                </tr>
+                <tr>
+                  <td className='p-2 pl-4'>+T+R</td>
+                  <td className='text-center p-2 border-l border-gray-200'>8.9</td>
+                  <td className='text-center p-2'>3.31</td>
+                  <td className='text-center p-2'>7.90</td>
+                  <td className='text-center p-2 border-r border-gray-200'>44.9</td>
+                  <td className='text-center p-2'>4.8</td>
+                  <td className='text-center p-2'>4.42</td>
+                  <td className='text-center p-2'>7.91</td>
+                  <td className='text-center p-2 border-r border-gray-200'>45.6</td>
+                  <td className='text-center p-2'>10.2</td>
+                  <td className='text-center p-2'>3.47</td>
+                  <td className='text-center p-2'>7.87</td>
+                  <td className='text-center p-2'>42.8</td>
+                </tr>
+                <tr>
+                  <td className='p-2 pl-4'>+T+R+DTRI</td>
+                  <td className='text-center p-2 border-l border-gray-200'>8.4</td>
+                  <td className='text-center p-2'>3.36</td>
+                  <td className='text-center p-2'>7.84</td>
+                  <td className='text-center p-2 border-r border-gray-200'>43.5</td>
+                  <td className='text-center p-2'>4.7</td>
+                  <td className='text-center p-2'>4.40</td>
+                  <td className='text-center p-2'>7.83</td>
+                  <td className='text-center p-2 border-r border-gray-200'>44.1</td>
+                  <td className='text-center p-2'>10.9</td>
+                  <td className='text-center p-2'>3.68</td>
+                  <td className='text-center p-2'>7.79</td>
+                  <td className='text-center p-2'>41.4</td>
+                </tr>
+                <tr className='bg-blue-50'>
+                  <td className='p-2 pl-4 font-semibold'>+T+R+DTRI+V</td>
+                  <td className='text-center p-2 border-l border-gray-200 font-semibold'>8.8</td>
+                  <td className='text-center p-2 font-semibold'>3.37</td>
+                  <td className='text-center p-2 font-semibold'>7.84</td>
+                  <td className='text-center p-2 border-r border-gray-200 font-semibold'>42.6</td>
+                  <td className='text-center p-2 font-semibold'>4.7</td>
+                  <td className='text-center p-2 font-semibold'>4.37</td>
+                  <td className='text-center p-2 font-semibold'>7.85</td>
+                  <td className='text-center p-2 border-r border-gray-200 font-semibold'>43.3</td>
+                  <td className='text-center p-2 font-semibold'>9.9</td>
+                  <td className='text-center p-2 font-semibold'>3.74</td>
+                  <td className='text-center p-2 font-semibold'>7.80</td>
+                  <td className='text-center p-2 font-semibold'>40.8</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p className='text-sm text-gray-600 mt-4 text-left'>
+            Table 1: Quantitative evaluation across three datasets (<strong>CODa</strong>, <strong>SCAND</strong>, <strong>CityWalk</strong>) and three regimes: <strong>Seen</strong>, <strong>Counterfactual</strong>, and <strong>Unseen</strong>. We compare baseline against progressive reward combinations (T+R, T+R+DTRI, T+R+DTRI+V). GrndCtrl achieves substantial improvements. Metrics: T (Translation Error, m), R (Rotation Error, rad), V (Video Quality), DTRI (Depth Temporal Reprojection Inliers).
+          </p>
+          
+          {/* Second Table - Reliability Analysis */}
+          <div className='overflow-x-auto mt-12'>
+            <table className='w-full border-collapse text-sm'>
+              <thead>
+                <tr className='border-b-2 border-gray-300'>
+                  <th className='text-left p-2 font-semibold'>Method</th>
+                  <th colSpan={2} className='text-center p-2 font-semibold border-l border-r border-gray-300'>
+                    <div>Seen</div>
+                  </th>
+                  <th colSpan={2} className='text-center p-2 font-semibold border-r border-gray-300'>
+                    <div>Counterfactual</div>
+                  </th>
+                  <th colSpan={2} className='text-center p-2 font-semibold'>
+                    <div>Unseen</div>
+                  </th>
+                </tr>
+                <tr className='border-b border-gray-300'>
+                  <th className='text-left p-2'></th>
+                  <th className='text-center p-2 border-l border-gray-300'>T↓</th>
+                  <th className='text-center p-2 border-r border-gray-300'>R↓</th>
+                  <th className='text-center p-2'>T↓</th>
+                  <th className='text-center p-2 border-r border-gray-300'>R↓</th>
+                  <th className='text-center p-2'>T↓</th>
+                  <th className='text-center p-2'>R↓</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className='p-2 pl-4'>Baseline</td>
+                  <td className='text-center p-2 border-l border-gray-200'>73.2 ± 243.7</td>
+                  <td className='text-center p-2 border-r border-gray-200'>2.38 ± 3.88</td>
+                  <td className='text-center p-2'>75.8 ± 253.9</td>
+                  <td className='text-center p-2 border-r border-gray-200'>2.38 ± 3.90</td>
+                  <td className='text-center p-2'>71.2 ± 251.2</td>
+                  <td className='text-center p-2'>2.88 ± 4.28</td>
+                </tr>
+                <tr>
+                  <td className='p-2 pl-4'>GrndCtrl T+R 100</td>
+                  <td className='text-center p-2 border-l border-gray-200'>72.0 ± 283.6</td>
+                  <td className='text-center p-2 border-r border-gray-200'>1.95 ± 3.38</td>
+                  <td className='text-center p-2'>75.9 ± 311.7</td>
+                  <td className='text-center p-2 border-r border-gray-200'>1.85 ± 3.22</td>
+                  <td className='text-center p-2'>58.4 ± 231.1</td>
+                  <td className='text-center p-2'>2.57 ± 4.08</td>
+                </tr>
+                <tr>
+                  <td className='p-2 pl-4'>GrndCtrl T+R 150</td>
+                  <td className='text-center p-2 border-l border-gray-200'>26.7 ± 101.5</td>
+                  <td className='text-center p-2 border-r border-gray-200'>1.54 ± 2.84</td>
+                  <td className='text-center p-2'>24.8 ± 99.1</td>
+                  <td className='text-center p-2 border-r border-gray-200'>1.53 ± 2.80</td>
+                  <td className='text-center p-2'>26.5 ± 104.3</td>
+                  <td className='text-center p-2'>2.08 ± 3.33</td>
+                </tr>
+                <tr className='bg-blue-50'>
+                  <td className='p-2 pl-4 font-semibold'>GrndCtrl T+R 200</td>
+                  <td className='text-center p-2 border-l border-gray-200 font-semibold'>18.4 ± 68.1</td>
+                  <td className='text-center p-2 border-r border-gray-200 font-semibold'>1.40 ± 2.49</td>
+                  <td className='text-center p-2 font-semibold'>16.8 ± 63.0</td>
+                  <td className='text-center p-2 border-r border-gray-200 font-semibold'>1.36 ± 2.57</td>
+                  <td className='text-center p-2 font-semibold'>16.3 ± 56.5</td>
+                  <td className='text-center p-2 font-semibold'>1.97 ± 3.11</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p className='text-sm text-gray-600 mt-4 text-left'>
+            Table 2: Reliability analysis showing error statistics (mean ± standard deviation) across multiple stochastic rollouts for different GRPO iterations. Baseline exhibits high variance, while GRPO training progressively reduces both mean errors and variance, achieving consistent rollouts. Metrics: T (Translation Error, m), R (Rotation Error, rad).
+          </p>
         </div>
       </section>
 
