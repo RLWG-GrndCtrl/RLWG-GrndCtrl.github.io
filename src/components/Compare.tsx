@@ -1,7 +1,7 @@
 // components/ImageCompare.tsx
 'use client';
 
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState, useEffect } from 'react';
 
 type Props = {
   leftSrc: string;
@@ -33,8 +33,61 @@ export default function ImageCompare({
   objectPosition = 'center',
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const leftImgRef = useRef<HTMLImageElement | null>(null);
+  const rightImgRef = useRef<HTMLImageElement | null>(null);
   const [t, setT] = useState<number>(clamp01(initial));
   const [dragging, setDragging] = useState(false);
+  const [imagesLoaded, setImagesLoaded] = useState({ left: false, right: false });
+  const [syncKey, setSyncKey] = useState(0);
+  const [showImages, setShowImages] = useState(false);
+
+  // Reset load state when sources change
+  useEffect(() => {
+    setImagesLoaded({ left: false, right: false });
+    setShowImages(false);
+    setSyncKey(prev => prev + 1);
+  }, [leftSrc, rightSrc]);
+
+  // Synchronize GIFs once both are loaded
+  useEffect(() => {
+    if (imagesLoaded.left && imagesLoaded.right) {
+      // Small delay to ensure both GIFs are ready, then show them simultaneously
+      // This ensures both GIFs start playing from frame 0 at the same time
+      const timer = setTimeout(() => {
+        setShowImages(true);
+        // Force restart by reloading the images to ensure they start from frame 0
+        if (leftImgRef.current && rightImgRef.current) {
+          const leftImg = leftImgRef.current;
+          const rightImg = rightImgRef.current;
+          
+          // Temporarily hide and reload to restart GIFs
+          const leftSrcTemp = leftImg.src;
+          const rightSrcTemp = rightImg.src;
+          
+          // Clear and reload simultaneously
+          leftImg.src = '';
+          rightImg.src = '';
+          
+          requestAnimationFrame(() => {
+            if (leftImgRef.current && rightImgRef.current) {
+              leftImgRef.current.src = leftSrcTemp;
+              rightImgRef.current.src = rightSrcTemp;
+            }
+          });
+        }
+      }, 50);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [imagesLoaded.left, imagesLoaded.right]);
+
+  const handleLeftLoad = useCallback(() => {
+    setImagesLoaded(prev => ({ ...prev, left: true }));
+  }, []);
+
+  const handleRightLoad = useCallback(() => {
+    setImagesLoaded(prev => ({ ...prev, right: true }));
+  }, []);
 
   const updateFromClientX = useCallback((clientX: number) => {
     const el = containerRef.current;
@@ -97,24 +150,57 @@ export default function ImageCompare({
         aria-hidden="true"
         className="block w-full h-auto opacity-0 pointer-events-none select-none"
         draggable={false}
+        key={`sizer-${syncKey}`}
       />
 
       {/* Visible base (left) image — absolute, same fit/position as overlay */}
-      <img
-        src={leftSrc}
-        alt={leftAlt}
-        className={`absolute inset-0 w-full h-full ${fitClass} ${posClass} pointer-events-none select-none`}
-        draggable={false}
-      />
+      {showImages && (
+        <img
+          ref={leftImgRef}
+          src={leftSrc}
+          alt={leftAlt}
+          className={`absolute inset-0 w-full h-full ${fitClass} ${posClass} pointer-events-none select-none`}
+          draggable={false}
+          onLoad={handleLeftLoad}
+          key={`left-${syncKey}`}
+        />
+      )}
+
+      {/* Preload left image (hidden) */}
+      {!showImages && (
+        <img
+          src={leftSrc}
+          alt=""
+          className="hidden"
+          onLoad={handleLeftLoad}
+          key={`preload-left-${syncKey}`}
+        />
+      )}
 
       {/* Visible overlay (right) image — absolute + clipped */}
-      <img
-        src={rightSrc}
-        alt={rightAlt}
-        className={`absolute inset-0 w-full h-full ${fitClass} ${posClass} pointer-events-none select-none`}
-        style={{ clipPath: clip, WebkitClipPath: clip as any }}
-        draggable={false}
-      />
+      {showImages && (
+        <img
+          ref={rightImgRef}
+          src={rightSrc}
+          alt={rightAlt}
+          className={`absolute inset-0 w-full h-full ${fitClass} ${posClass} pointer-events-none select-none`}
+          style={{ clipPath: clip, WebkitClipPath: clip as any }}
+          draggable={false}
+          onLoad={handleRightLoad}
+          key={`right-${syncKey}`}
+        />
+      )}
+
+      {/* Preload right image (hidden) */}
+      {!showImages && (
+        <img
+          src={rightSrc}
+          alt=""
+          className="hidden"
+          onLoad={handleRightLoad}
+          key={`preload-right-${syncKey}`}
+        />
+      )}
 
       {/* Divider / handle */}
       <div

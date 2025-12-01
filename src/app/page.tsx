@@ -6,7 +6,6 @@ import '@/lib/env';
 
 import Figure from '@/components/Figure';
 import KatexSpan from '@/components/KaTeX';
-import ImageCompare from '@/components/Compare';
 import ArrowLink from '@/components/links/ArrowLink';
 import UnderlineLink from '@/components/links/UnderlineLink';
 
@@ -16,6 +15,188 @@ type Author = {
   affiliation?: string; // Affiliation superscript (e.g., "1", "1,2")
 };
 
+// Component for displaying three synchronized GIFs side-by-side
+function SynchronizedGifs({
+  groundTruth,
+  baseline,
+  ours,
+  name,
+}: {
+  groundTruth: string;
+  baseline: string;
+  ours: string;
+  name: string;
+}) {
+  const gtRef = useRef<HTMLImageElement>(null);
+  const baselineRef = useRef<HTMLImageElement>(null);
+  const oursRef = useRef<HTMLImageElement>(null);
+  const [imagesLoaded, setImagesLoaded] = useState({ gt: false, baseline: false, ours: false });
+  const [showImages, setShowImages] = useState(false);
+  const [syncKey, setSyncKey] = useState(0);
+  const [cacheBuster, setCacheBuster] = useState(Date.now());
+
+  // Reset when sources change - this forces fresh reload of all GIFs
+  useEffect(() => {
+    setImagesLoaded({ gt: false, baseline: false, ours: false });
+    setShowImages(false);
+    setSyncKey(prev => prev + 1);
+    setCacheBuster(Date.now()); // Force cache bust for ground truth that might be playing
+  }, [groundTruth, baseline, ours]);
+
+  // Show images once all are loaded
+  useEffect(() => {
+    if (imagesLoaded.gt && imagesLoaded.baseline && imagesLoaded.ours) {
+      // Small delay to ensure all GIFs are ready, then show them
+      const timer = setTimeout(() => {
+        setShowImages(true);
+      }, 50);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [imagesLoaded.gt, imagesLoaded.baseline, imagesLoaded.ours]);
+
+  // Synchronize all three GIFs once they're all shown
+  useEffect(() => {
+    if (showImages && gtRef.current && baselineRef.current && oursRef.current) {
+      // Force restart by reloading all images simultaneously
+      // This ensures all GIFs start from frame 0 at the same time
+      const timer = setTimeout(() => {
+        if (gtRef.current && baselineRef.current && oursRef.current) {
+          // Get original sources without cache buster
+          const gtOriginalSrc = groundTruth;
+          const baselineOriginalSrc = baseline;
+          const oursOriginalSrc = ours;
+          
+          // Clear all sources simultaneously to stop any playing GIFs
+          gtRef.current.src = '';
+          baselineRef.current.src = '';
+          oursRef.current.src = '';
+          
+          // Wait a frame to ensure they're cleared
+          requestAnimationFrame(() => {
+            // Reload all simultaneously with fresh cache-busting to force restart from frame 0
+            const freshTimestamp = Date.now();
+            if (gtRef.current && baselineRef.current && oursRef.current) {
+              gtRef.current.src = `${gtOriginalSrc}?t=${freshTimestamp}`;
+              baselineRef.current.src = `${baselineOriginalSrc}?t=${freshTimestamp}`;
+              oursRef.current.src = `${oursOriginalSrc}?t=${freshTimestamp}`;
+            }
+          });
+        }
+      }, 100);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [showImages, groundTruth, baseline, ours]);
+
+  const handleGtLoad = useCallback(() => {
+    setImagesLoaded(prev => ({ ...prev, gt: true }));
+  }, []);
+
+  const handleBaselineLoad = useCallback(() => {
+    setImagesLoaded(prev => ({ ...prev, baseline: true }));
+  }, []);
+
+  const handleOursLoad = useCallback(() => {
+    setImagesLoaded(prev => ({ ...prev, ours: true }));
+  }, []);
+
+  return (
+    <div className='px-48'>
+      <div className='grid grid-cols-1 md:grid-cols-3 gap-6 mb-4'>
+        {/* Ground Truth */}
+        <div className='flex flex-col'>
+          <div className='text-sm font-semibold mb-2 text-center' style={{ color: '#4A7EBB' }}>
+            Ground Truth
+          </div>
+          {showImages ? (
+            <img
+              ref={gtRef}
+              src={`${groundTruth}?t=${cacheBuster}`}
+              alt={`${name} ground truth`}
+              className='w-full rounded-lg shadow-xl'
+              key={`gt-${syncKey}`}
+            />
+          ) : (
+            <div className='w-full aspect-video bg-gray-200 rounded-lg flex items-center justify-center'>
+              <div className='text-gray-400'>Loading...</div>
+            </div>
+          )}
+          {!showImages && (
+            <img
+              src={`${groundTruth}?t=${cacheBuster}`}
+              alt=""
+              className="hidden"
+              onLoad={handleGtLoad}
+              key={`preload-gt-${syncKey}`}
+            />
+          )}
+        </div>
+
+        {/* Baseline */}
+        <div className='flex flex-col'>
+          <div className='text-sm font-semibold mb-2 text-center' style={{ color: '#C95C54' }}>
+            Baseline (Counterfactual)
+          </div>
+          {showImages ? (
+            <img
+              ref={baselineRef}
+              src={`${baseline}?t=${cacheBuster}`}
+              alt={`${name} baseline`}
+              className='w-full rounded-lg shadow-xl'
+              key={`baseline-${syncKey}`}
+            />
+          ) : (
+            <div className='w-full aspect-video bg-gray-200 rounded-lg flex items-center justify-center'>
+              <div className='text-gray-400'>Loading...</div>
+            </div>
+          )}
+          {!showImages && (
+            <img
+              src={`${baseline}?t=${cacheBuster}`}
+              alt=""
+              className="hidden"
+              onLoad={handleBaselineLoad}
+              key={`preload-baseline-${syncKey}`}
+            />
+          )}
+        </div>
+
+        {/* Ours */}
+        <div className='flex flex-col'>
+          <div className='text-sm font-semibold mb-2 text-center' style={{ color: '#5E9C76' }}>
+            Ours (Counterfactual)
+          </div>
+          {showImages ? (
+            <img
+              ref={oursRef}
+              src={`${ours}?t=${cacheBuster}`}
+              alt={`${name} ours`}
+              className='w-full rounded-lg shadow-xl'
+              key={`ours-${syncKey}`}
+            />
+          ) : (
+            <div className='w-full aspect-video bg-gray-200 rounded-lg flex items-center justify-center'>
+              <div className='text-gray-400'>Loading...</div>
+            </div>
+          )}
+          {!showImages && (
+            <img
+              src={`${ours}?t=${cacheBuster}`}
+              alt=""
+              className="hidden"
+              onLoad={handleOursLoad}
+              key={`preload-ours-${syncKey}`}
+            />
+          )}
+        </div>
+      </div>
+      <p className='text-sm text-gray-600 text-center mt-4 italic'>
+        Counterfactual trajectories are left-right mirrored trajectories of those of ground truths.
+      </p>
+    </div>
+  );
+}
 
 export default function HomePage() {
   const textColor = 'text-gray-600';
@@ -377,39 +558,13 @@ export default function HomePage() {
                 </div>
               </div>
             ) : (
-              // Show the 2 comparison sliders for selected set
-              <div className='px-48'>
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                  <div className='flex flex-col'>
-                    <ImageCompare
-                      rightSrc={selectedVideoSet.groundTruth}
-                      leftSrc={selectedVideoSet.baseline}
-                      rightAlt={`${selectedVideoSet.name} ground truth`}
-                      leftAlt={`${selectedVideoSet.name} baseline`}
-                      rightLabel="Baseline (Counterfactual)"
-                      leftLabel="Ground Truth"
-                      leftLabelColor="#4A7EBB"
-                      rightLabelColor="#C95C54"
-                      className="w-full max-w-lg mx-auto"
-                      fit="contain"
-                    />
-                  </div>
-                  <div className='flex flex-col'>
-                    <ImageCompare
-                      rightSrc={selectedVideoSet.groundTruth}
-                      leftSrc={selectedVideoSet.ours}
-                      rightAlt={`${selectedVideoSet.name} ground truth`}
-                      leftAlt={`${selectedVideoSet.name} ours`}
-                      rightLabel="Ours (Counterfactual)"
-                      leftLabel="Ground Truth"
-                      leftLabelColor="#4A7EBB"
-                      rightLabelColor="#5E9C76"
-                      className="w-full max-w-lg mx-auto"
-                      fit="contain"
-                    />
-                  </div>
-                </div>
-              </div>
+              // Show 3 synchronized GIFs side-by-side
+              <SynchronizedGifs
+                groundTruth={selectedVideoSet.groundTruth}
+                baseline={selectedVideoSet.baseline}
+                ours={selectedVideoSet.ours}
+                name={selectedVideoSet.name}
+              />
             )}
             <div className='pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-gray-100 to-transparent' />
             <div className='pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-gray-100 to-transparent' />
