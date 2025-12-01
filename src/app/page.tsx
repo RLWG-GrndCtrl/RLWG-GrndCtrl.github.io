@@ -34,7 +34,7 @@ export default function HomePage() {
     { name: 'Dong-Ki Kim', url: 'https://dkkim93.github.io/', affiliation: '2' },
     { name: 'Max Smith', url: 'https://www.maxosmith.com/', affiliation: '2' },
     { name: 'Daniel McGann', url: 'https://danmcgann.com/', affiliation: '2' },
-    { name: 'Ali Agha', url: 'https://www.fieldai.com/', affiliation: '2' },
+    { name: 'Ali-akbar Agha-mohammadi', url: 'https://www.fieldai.com/', affiliation: '2' },
     { name: 'Shayegan Omidshafiei', url: 'https://www.fieldai.com/', affiliation: '2' },
     { name: 'Sebastian Scherer', url: 'https://www.ri.cmu.edu/ri-faculty/sebastian-scherer/', affiliation: '1,2' },
   ];
