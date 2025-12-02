@@ -227,12 +227,15 @@ export default function HomePage() {
   const backgroundVideo = null;
   const backgroundImage = '/images/groundctrl_intro1s.gif'; 
   const backgroundOverlay = 'bg-black/40'; // Overlay color (adjust opacity: bg-black/20 to bg-black/80)
-  const citation_bibtex = `@article{grndctrl2026,
+  const citation_bibtex = `@misc{he2025grndctrlgroundingworldmodels,
       title={GrndCtrl: Grounding World Models via Self-Supervised Reward Alignment}, 
-      author={[Authors to be added]},
-      journal={CVPR},
-      year={2026},
-      url={https://arxiv.org/abs/[arxiv-id]}, 
+      author={Haoyang He and Jay Patrikar and Dong-Ki Kim and Max Smith and Daniel McGann 
+              and Ali-akbar Agha-mohammadi and Shayegan Omidshafiei and Sebastian Scherer},
+      year={2025},
+      eprint={2512.01952},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2512.01952}, 
 }`;
   const sliderItems: { title: string; content: React.ReactNode }[] = [
     {
@@ -409,7 +412,7 @@ export default function HomePage() {
               </div>
             </div>
             <div className="container flex flex-row items-center space-x-8 justify-center text-lg mt-6">
-              <ArrowLink className='' href='#' variant="light" size='large' icon={
+              <ArrowLink className='' href='https://arxiv.org/abs/2512.01952' variant="light" size='large' icon={
                 <img
                   src='/svg/arxiv.svg'
                   alt='arXiv logo'
@@ -584,7 +587,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className={clsx(secondaryBgColor, textColor)}>
+      <section className={clsx(bgColor, textColor)}>
         <div className='layout py-12'>
           <h2 className='pb-4'>Quantitative Results</h2>
           <div className='overflow-x-auto'>
@@ -890,14 +893,14 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* <section className={clsx(secondaryBgColor, textColor)}>
+      <section className={clsx(secondaryBgColor, textColor)}>
         <div className='layout pt-4 pb-48'>
           <h2 className='mt-12 mb-4'>Citation</h2>
           <pre className='ml-12'>
             {citation_bibtex}
           </pre>
         </div>
-      </section> */}
+      </section>
     </main >
   );
 }
