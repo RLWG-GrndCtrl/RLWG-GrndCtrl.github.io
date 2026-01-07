@@ -15,8 +15,8 @@ type Author = {
   affiliation?: string; // Affiliation superscript (e.g., "1", "1,2")
 };
 
-// Component for displaying three synchronized GIFs side-by-side
-function SynchronizedGifs({
+// Component for displaying three synchronized videos side-by-side
+function SynchronizedVideos({
   groundTruth,
   baseline,
   ours,
@@ -27,78 +27,103 @@ function SynchronizedGifs({
   ours: string;
   name: string;
 }) {
-  const gtRef = useRef<HTMLImageElement>(null);
-  const baselineRef = useRef<HTMLImageElement>(null);
-  const oursRef = useRef<HTMLImageElement>(null);
-  const [imagesLoaded, setImagesLoaded] = useState({ gt: false, baseline: false, ours: false });
-  const [showImages, setShowImages] = useState(false);
-  const [syncKey, setSyncKey] = useState(0);
-  const [cacheBuster, setCacheBuster] = useState(Date.now());
+  const gtRef = useRef<HTMLVideoElement>(null);
+  const baselineRef = useRef<HTMLVideoElement>(null);
+  const oursRef = useRef<HTMLVideoElement>(null);
+  const [videosLoaded, setVideosLoaded] = useState({ gt: false, baseline: false, ours: false });
+  const [showVideos, setShowVideos] = useState(false);
+  const syncKeyRef = useRef(0);
 
-  // Reset when sources change - this forces fresh reload of all GIFs
+  // Reset when sources change
   useEffect(() => {
-    setImagesLoaded({ gt: false, baseline: false, ours: false });
-    setShowImages(false);
-    setSyncKey(prev => prev + 1);
-    setCacheBuster(Date.now()); // Force cache bust for ground truth that might be playing
+    setVideosLoaded({ gt: false, baseline: false, ours: false });
+    setShowVideos(false);
+    syncKeyRef.current += 1;
+    
+    // Reset all videos
+    if (gtRef.current) {
+      gtRef.current.currentTime = 0;
+      gtRef.current.pause();
+    }
+    if (baselineRef.current) {
+      baselineRef.current.currentTime = 0;
+      baselineRef.current.pause();
+    }
+    if (oursRef.current) {
+      oursRef.current.currentTime = 0;
+      oursRef.current.pause();
+    }
   }, [groundTruth, baseline, ours]);
 
-  // Show images once all are loaded
+  // Show videos once all are loaded
   useEffect(() => {
-    if (imagesLoaded.gt && imagesLoaded.baseline && imagesLoaded.ours) {
-      // Small delay to ensure all GIFs are ready, then show them
+    if (videosLoaded.gt && videosLoaded.baseline && videosLoaded.ours) {
       const timer = setTimeout(() => {
-        setShowImages(true);
-      }, 50);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [imagesLoaded.gt, imagesLoaded.baseline, imagesLoaded.ours]);
-
-  // Synchronize all three GIFs once they're all shown
-  useEffect(() => {
-    if (showImages && gtRef.current && baselineRef.current && oursRef.current) {
-      // Force restart by reloading all images simultaneously
-      // This ensures all GIFs start from frame 0 at the same time
-      const timer = setTimeout(() => {
-        if (gtRef.current && baselineRef.current && oursRef.current) {
-          // Get original sources without cache buster
-          const gtOriginalSrc = groundTruth;
-          const baselineOriginalSrc = baseline;
-          const oursOriginalSrc = ours;
-          
-          // Clear all sources simultaneously to stop any playing GIFs
-          gtRef.current.src = '';
-          baselineRef.current.src = '';
-          oursRef.current.src = '';
-          
-          // Wait a frame to ensure they're cleared
-          requestAnimationFrame(() => {
-            // Reload all simultaneously with fresh cache-busting to force restart from frame 0
-            const freshTimestamp = Date.now();
-            if (gtRef.current && baselineRef.current && oursRef.current) {
-              gtRef.current.src = `${gtOriginalSrc}?t=${freshTimestamp}`;
-              baselineRef.current.src = `${baselineOriginalSrc}?t=${freshTimestamp}`;
-              oursRef.current.src = `${oursOriginalSrc}?t=${freshTimestamp}`;
-            }
-          });
-        }
+        setShowVideos(true);
       }, 100);
       
       return () => clearTimeout(timer);
     }
-  }, [showImages, groundTruth, baseline, ours]);
+  }, [videosLoaded.gt, videosLoaded.baseline, videosLoaded.ours]);
 
-  const handleGtLoad = useCallback(() => {
-    setImagesLoaded(prev => ({ ...prev, gt: true }));
+  // Synchronize all three videos once they're all shown
+  useEffect(() => {
+    if (showVideos && gtRef.current && baselineRef.current && oursRef.current) {
+      const syncVideos = () => {
+        const videos = [gtRef.current, baselineRef.current, oursRef.current];
+        
+        // Wait for all videos to be ready (readyState 4 = HAVE_ENOUGH_DATA)
+        const allReady = videos.every(v => v && v.readyState >= 3);
+        
+        if (allReady) {
+          // Use requestAnimationFrame to ensure synchronization happens at the same frame
+          requestAnimationFrame(() => {
+            // Set all videos to start at time 0 simultaneously
+            videos.forEach(v => {
+              if (v) {
+                v.currentTime = 0;
+                v.pause(); // Ensure they're paused before playing
+              }
+            });
+            
+            // Use another requestAnimationFrame to start playback at the exact same frame
+            requestAnimationFrame(() => {
+              // Play all videos simultaneously
+              const playPromises = videos.map(v => {
+                if (v) {
+                  return v.play();
+                }
+                return Promise.resolve();
+              }).filter(Boolean) as Promise<void>[];
+              
+              Promise.all(playPromises).catch(err => {
+                console.error('Error playing videos:', err);
+              });
+            });
+          });
+        } else {
+          // If not all ready, wait a bit and try again
+          setTimeout(syncVideos, 50);
+        }
+      };
+
+      // Small delay to ensure DOM is ready
+      const timer = setTimeout(syncVideos, 100);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [showVideos, groundTruth, baseline, ours]);
+
+  const handleGtCanPlay = useCallback(() => {
+    setVideosLoaded(prev => ({ ...prev, gt: true }));
   }, []);
 
-  const handleBaselineLoad = useCallback(() => {
-    setImagesLoaded(prev => ({ ...prev, baseline: true }));
+  const handleBaselineCanPlay = useCallback(() => {
+    setVideosLoaded(prev => ({ ...prev, baseline: true }));
   }, []);
 
-  const handleOursLoad = useCallback(() => {
-    setImagesLoaded(prev => ({ ...prev, ours: true }));
+  const handleOursCanPlay = useCallback(() => {
+    setVideosLoaded(prev => ({ ...prev, ours: true }));
   }, []);
 
   return (
@@ -109,26 +134,28 @@ function SynchronizedGifs({
           <div className='text-sm font-semibold mb-2 text-center' style={{ color: '#4A7EBB' }}>
             Ground Truth
           </div>
-          {showImages ? (
-            <img
+          {showVideos ? (
+            <video
               ref={gtRef}
-              src={`${groundTruth}?t=${cacheBuster}`}
-              alt={`${name} ground truth`}
+              src={groundTruth}
               className='w-full rounded-lg shadow-xl'
-              key={`gt-${syncKey}`}
+              loop
+              muted
+              playsInline
+              key={`gt-${syncKeyRef.current}`}
+              onCanPlay={handleGtCanPlay}
             />
           ) : (
             <div className='w-full aspect-video bg-gray-200 rounded-lg flex items-center justify-center'>
               <div className='text-gray-400'>Loading...</div>
             </div>
           )}
-          {!showImages && (
-            <img
-              src={`${groundTruth}?t=${cacheBuster}`}
-              alt=""
+          {!showVideos && (
+            <video
+              src={groundTruth}
               className="hidden"
-              onLoad={handleGtLoad}
-              key={`preload-gt-${syncKey}`}
+              onCanPlay={handleGtCanPlay}
+              key={`preload-gt-${syncKeyRef.current}`}
             />
           )}
         </div>
@@ -138,26 +165,28 @@ function SynchronizedGifs({
           <div className='text-sm font-semibold mb-2 text-center' style={{ color: '#C95C54' }}>
             Baseline (Counterfactual)
           </div>
-          {showImages ? (
-            <img
+          {showVideos ? (
+            <video
               ref={baselineRef}
-              src={`${baseline}?t=${cacheBuster}`}
-              alt={`${name} baseline`}
+              src={baseline}
               className='w-full rounded-lg shadow-xl'
-              key={`baseline-${syncKey}`}
+              loop
+              muted
+              playsInline
+              key={`baseline-${syncKeyRef.current}`}
+              onCanPlay={handleBaselineCanPlay}
             />
           ) : (
             <div className='w-full aspect-video bg-gray-200 rounded-lg flex items-center justify-center'>
               <div className='text-gray-400'>Loading...</div>
             </div>
           )}
-          {!showImages && (
-            <img
-              src={`${baseline}?t=${cacheBuster}`}
-              alt=""
+          {!showVideos && (
+            <video
+              src={baseline}
               className="hidden"
-              onLoad={handleBaselineLoad}
-              key={`preload-baseline-${syncKey}`}
+              onCanPlay={handleBaselineCanPlay}
+              key={`preload-baseline-${syncKeyRef.current}`}
             />
           )}
         </div>
@@ -167,26 +196,28 @@ function SynchronizedGifs({
           <div className='text-sm font-semibold mb-2 text-center' style={{ color: '#5E9C76' }}>
             Ours (Counterfactual)
           </div>
-          {showImages ? (
-            <img
+          {showVideos ? (
+            <video
               ref={oursRef}
-              src={`${ours}?t=${cacheBuster}`}
-              alt={`${name} ours`}
+              src={ours}
               className='w-full rounded-lg shadow-xl'
-              key={`ours-${syncKey}`}
+              loop
+              muted
+              playsInline
+              key={`ours-${syncKeyRef.current}`}
+              onCanPlay={handleOursCanPlay}
             />
           ) : (
             <div className='w-full aspect-video bg-gray-200 rounded-lg flex items-center justify-center'>
               <div className='text-gray-400'>Loading...</div>
             </div>
           )}
-          {!showImages && (
-            <img
-              src={`${ours}?t=${cacheBuster}`}
-              alt=""
+          {!showVideos && (
+            <video
+              src={ours}
               className="hidden"
-              onLoad={handleOursLoad}
-              key={`preload-ours-${syncKey}`}
+              onCanPlay={handleOursCanPlay}
+              key={`preload-ours-${syncKeyRef.current}`}
             />
           )}
         </div>
@@ -224,8 +255,8 @@ export default function HomePage() {
   // For video: use '/video/your-video.mp4'
   // For image: use '/images/your-image.png'
   // const backgroundVideo = '/video/CoMe-Intro-v5.mp4'; // Set to null to disable
-  const backgroundVideo = null;
-  const backgroundImage = '/images/groundctrl_intro1s.gif'; 
+  const backgroundVideo = '/images/groundctrl_intro1s.mp4';
+  const backgroundImage = null; 
   const backgroundOverlay = 'bg-black/40'; // Overlay color (adjust opacity: bg-black/20 to bg-black/80)
   const citation_bibtex = `@misc{he2025grndctrlgroundingworldmodels,
       title={GrndCtrl: Grounding World Models via Self-Supervised Reward Alignment}, 
@@ -317,44 +348,44 @@ export default function HomePage() {
     {
       folder: 'vids-coda2',
       name: 'CODA 2',
-      baseline: '/images/vids-coda2/16_22_baseline.gif',
-      groundTruth: '/images/vids-coda2/16_22_gt.gif',
-      ours: '/images/vids-coda2/16_22_ours.gif',
+      baseline: '/images/vids-coda2/16_22_baseline.mp4',
+      groundTruth: '/images/vids-coda2/16_22_gt.mp4',
+      ours: '/images/vids-coda2/16_22_ours.mp4',
     },
     {
       folder: 'vids-scand2',
       name: 'Scand 2',
-      baseline: '/images/vids-scand2/scand_sample_base.gif',
-      groundTruth: '/images/vids-scand2/scand_sample_gt.gif',
-      ours: '/images/vids-scand2/scand_sample_ours.gif',
+      baseline: '/images/vids-scand2/scand_sample_base.mp4',
+      groundTruth: '/images/vids-scand2/scand_sample_gt.mp4',
+      ours: '/images/vids-scand2/scand_sample_ours.mp4',
     },
     {
       folder: 'vids-citywalk1',
       name: 'CityWalk 1',
-      baseline: '/images/vids-citywalk1/citywalk_sample71_base.gif',
-      groundTruth: '/images/vids-citywalk1/citywalk_sample71_gt.gif',
-      ours: '/images/vids-citywalk1/citywalk_sample71_ours.gif',
+      baseline: '/images/vids-citywalk1/citywalk_sample71_base.mp4',
+      groundTruth: '/images/vids-citywalk1/citywalk_sample71_gt.mp4',
+      ours: '/images/vids-citywalk1/citywalk_sample71_ours.mp4',
     },
     {
       folder: 'vids-coda1',
       name: 'CODA 1',
-      baseline: '/images/vids-coda1/13_10_baseline.gif',
-      groundTruth: '/images/vids-coda1/13_10_gt.gif',
-      ours: '/images/vids-coda1/13_10_ours.gif',
+      baseline: '/images/vids-coda1/13_10_baseline.mp4',
+      groundTruth: '/images/vids-coda1/13_10_gt.mp4',
+      ours: '/images/vids-coda1/13_10_ours.mp4',
     },
     {
       folder: 'vids-scand1',
       name: 'Scand 1',
-      baseline: '/images/vids-scand1/sample_11baseline.gif',
-      groundTruth: '/images/vids-scand1/sample_11gt.gif',
-      ours: '/images/vids-scand1/ours_sample11.gif',
+      baseline: '/images/vids-scand1/sample_11baseline.mp4',
+      groundTruth: '/images/vids-scand1/sample_11gt.mp4',
+      ours: '/images/vids-scand1/ours_sample11.mp4',
     },
     {
       folder: 'vids-citywalk2',
       name: 'CityWalk 2',
-      baseline: '/images/vids-citywalk2/citywalk_230base.gif',
-      groundTruth: '/images/vids-citywalk2/citywalk_230gt.gif',
-      ours: '/images/vids-citywalk2/citywalk_230ours.gif',
+      baseline: '/images/vids-citywalk2/citywalk_230base.mp4',
+      groundTruth: '/images/vids-citywalk2/citywalk_230gt.mp4',
+      ours: '/images/vids-citywalk2/citywalk_230ours.mp4',
     }
   ];
 
@@ -526,9 +557,9 @@ export default function HomePage() {
             <h2 className='pb-4'>Qualitative Comparison</h2>
           </div>
           
-          {/* Always show 3 synchronized GIFs side-by-side */}
+          {/* Always show 3 synchronized videos side-by-side */}
           <div className='mb-8'>
-            <SynchronizedGifs
+            <SynchronizedVideos
               groundTruth={selectedVideoSet.groundTruth}
               baseline={selectedVideoSet.baseline}
               ours={selectedVideoSet.ours}
@@ -550,10 +581,13 @@ export default function HomePage() {
                         : 'opacity-70 hover:opacity-90'
                     }`}
                   >
-                    <img
+                    <video
                       src={videoSet.groundTruth}
-                      alt={`${videoSet.name} ground truth`}
                       className='w-full rounded-lg shadow-xl'
+                      loop
+                      muted
+                      playsInline
+                      autoPlay
                     />
                   </div>
                 ))}
