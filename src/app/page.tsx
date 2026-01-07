@@ -358,7 +358,7 @@ export default function HomePage() {
     }
   ];
 
-  const [selectedVideoSet, setSelectedVideoSet] = useState<VideoSet | null>(null);
+  const [selectedVideoSet, setSelectedVideoSet] = useState<VideoSet>(videoSets[0]);
 
   return (
     <main>
@@ -422,7 +422,7 @@ export default function HomePage() {
               }>
                 arXiv Page
               </ArrowLink>
-              <ArrowLink className='' href='https://github.com/RLWG-GrndCtrl/RLWG-GrndCtrl.github.io' variant="light" size='large' icon={
+              <ArrowLink className='' href='https://github.com/RLWG-GrndCtrl/GrndCtrl' variant="light" size='large' icon={
                 <img
                   src='/svg/github.svg'
                   alt='GitHub logo'
@@ -522,56 +522,49 @@ export default function HomePage() {
 
       <section className={clsx(secondaryBgColor, textColor)}>
         <div className='py-12'>
-          <div className={`text-center ${selectedVideoSet ? 'mb-6' : 'mb-8'}`}>
+          <div className='text-center mb-8'>
             <h2 className='pb-4'>Qualitative Comparison</h2>
-            {!selectedVideoSet && (
-              <p className='text-gray-600'>
-                Click to see comparisons of GrndCtrl with ground truth and baseline methods across different scenarios.
-              </p>
-            )}
-            {selectedVideoSet && (
-              <button
-                onClick={() => setSelectedVideoSet(null)}
-                className='text-gray-600 hover:text-gray-900 underline transition-transform hover:-translate-x-1 inline-flex items-center gap-1'
-              >
-                <span>←</span>
-                <span>Back to all videos</span>
-              </button>
-            )}
           </div>
           
+          {/* Always show 3 synchronized GIFs side-by-side */}
+          <div className='mb-8'>
+            <SynchronizedGifs
+              groundTruth={selectedVideoSet.groundTruth}
+              baseline={selectedVideoSet.baseline}
+              ours={selectedVideoSet.ours}
+              name={selectedVideoSet.name}
+            />
+          </div>
+
+          {/* Slider to select which video set to display */}
           <div className='relative'>
-            {!selectedVideoSet ? (
-              // Show scrollable row of baseline videos
-              <div className='overflow-x-auto pb-4'>
-                <div className='flex gap-6 px-48 min-w-max'>
-                  {videoSets.map((videoSet) => (
-                    <div
-                      key={videoSet.folder}
-                      onClick={() => setSelectedVideoSet(videoSet)}
-                      className='flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity w-96'
-                    >
-                      <img
-                        src={videoSet.groundTruth}
-                        alt={`${videoSet.name} ground truth`}
-                        className='w-full rounded-lg shadow-xl'
-                      />
-                    </div>
-                  ))}
-                </div>
+            <div className='overflow-x-auto pb-4 scrollbar-hide'>
+              <div className='flex gap-6 px-48 min-w-max'>
+                {videoSets.map((videoSet) => (
+                  <div
+                    key={videoSet.folder}
+                    onClick={() => setSelectedVideoSet(videoSet)}
+                    className={`flex-shrink-0 cursor-pointer transition-all w-64 ${
+                      selectedVideoSet.folder === videoSet.folder
+                        ? 'opacity-100 scale-105 ring-2 ring-blue-500 rounded-lg'
+                        : 'opacity-70 hover:opacity-90'
+                    }`}
+                  >
+                    <img
+                      src={videoSet.groundTruth}
+                      alt={`${videoSet.name} ground truth`}
+                      className='w-full rounded-lg shadow-xl'
+                    />
+                  </div>
+                ))}
               </div>
-            ) : (
-              // Show 3 synchronized GIFs side-by-side
-              <SynchronizedGifs
-                groundTruth={selectedVideoSet.groundTruth}
-                baseline={selectedVideoSet.baseline}
-                ours={selectedVideoSet.ours}
-                name={selectedVideoSet.name}
-              />
-            )}
+            </div>
             <div className='pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-gray-100 to-transparent' />
             <div className='pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-gray-100 to-transparent' />
           </div>
+          <p className='text-sm text-gray-600 text-center mt-4 italic'>
+            Click to see comparisons of GrndCtrl with ground truth and baseline methods across different scenarios.
+          </p>
         </div>
       </section>
 

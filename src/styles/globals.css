@@ -114,6 +114,14 @@
     border: 2px solid #222222;
   }
 
+  .scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
   .animated-underline {
     background-image: linear-gradient(#33333300, #33333300),
       linear-gradient(
